@@ -1,0 +1,159 @@
+/* ============================================================
+   GLOBAL STYLES
+   Shared design tokens + base + the canonical site chrome
+   (Navbar + Footer + logo). Page-specific styles live in each
+   route's own scoped CSS file (.route-<name> / html.route-<name>).
+   ============================================================ */
+
+:root{
+  --paper:#F6F8FC;
+  --ink:#0D1B33;
+  --blue:#2742F5;
+  --blue-soft:#E8EDFE;
+  --grid:#DCE6F6;
+  --signal:#FF6B35;
+  --muted:#56688A;
+  --card:#FFFFFF;
+  --line:#C9D6EE;
+}
+
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+
+/* Default (scrolling pages: home / about / contact). Full-screen
+   routes override background + overflow via html.route-<name> body. */
+body{
+  font-family:'Inter',sans-serif;
+  background:var(--paper);
+  color:var(--ink);
+  background-image:
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size:48px 48px;
+  overflow-x:hidden;
+  min-height:100vh;
+}
+
+h1,h2,h3,.display{font-family:'Space Grotesk',sans-serif}
+a{color:inherit;text-decoration:none}
+::selection{background:var(--blue);color:#fff}
+
+/* ---------- NAV — Apple liquid glass (consistent across site) ---------- */
+nav{
+  position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:100;
+  display:flex;align-items:center;justify-content:space-between;gap:30px;
+  width:min(1180px,calc(100% - 36px));padding:10px 12px 10px 22px;border-radius:99px;
+  background:linear-gradient(135deg,rgba(255,255,255,.6),rgba(255,255,255,.34));
+  backdrop-filter:blur(24px) saturate(180%);-webkit-backdrop-filter:blur(24px) saturate(180%);
+  border:1px solid rgba(255,255,255,.7);
+  box-shadow:0 8px 32px rgba(13,27,51,.18),inset 0 1px 1px rgba(255,255,255,.85),inset 0 -1px 2px rgba(13,27,51,.05);
+  overflow:hidden;animation:navIn .7s .15s cubic-bezier(.22,1,.36,1) both;
+}
+@keyframes navIn{from{transform:translateX(-50%) translateY(-140%)}to{transform:translateX(-50%) translateY(0)}}
+nav::before{
+  content:'';position:absolute;top:0;left:-60%;width:55%;height:100%;
+  background:linear-gradient(105deg,transparent,rgba(255,255,255,.7),transparent);
+  transform:skewX(-18deg);animation:sheen 7s ease-in-out infinite;pointer-events:none;
+}
+@keyframes sheen{0%,55%{left:-60%}80%,100%{left:130%}}
+
+.logo{display:flex;align-items:center;gap:10px;font-family:'Space Grotesk';font-weight:700;font-size:1.1rem;color:#0D1B33;position:relative;z-index:1}
+.logo-mark,.logo svg,.logo img{width:26px;height:26px}
+.logo svg path{stroke:#2742F5;stroke-width:2;fill:none}
+
+.nav-links{display:flex;gap:2px;font-size:.86rem;font-weight:500;position:relative;z-index:1}
+.nav-links a{padding:8px 13px;border-radius:99px;color:#0D1B33;white-space:nowrap;transition:background .3s,color .25s}
+.nav-links a:hover,.nav-links a.on{background:rgba(39,66,245,.1);color:#2742F5}
+
+nav a.nav-cta{position:relative;z-index:1;padding:10px 18px;border-radius:50px;background:#000000;color:#ffffff;font-family:'Space Grotesk';font-weight:600;font-size:.85rem;white-space:nowrap;transition:all .3s;display:inline-flex;align-items:center;gap:8px;border:1px solid rgba(0,0,0,0.05);box-shadow:0 4px 14px rgba(0,0,0,.05)}
+nav a.nav-cta:hover{background:#000000;color:#ffffff;transform:translateY(-1px);box-shadow:0 8px 22px rgba(0,0,0,.3)}
+nav a.nav-cta .arr{transition:transform .3s}
+nav a.nav-cta:hover .arr{transform:translateX(4px)}
+
+/* ---------- RESPONSIVE: hide desktop nav links & CTA below 1040px ---------- */
+@media(max-width:1040px){
+  .nav-links{display:none}
+  nav a.nav-cta-desktop{display:none !important}
+  nav{overflow:visible} /* allow burger to be clipped correctly */
+}
+
+/* ---------- HAMBURGER BUTTON ---------- */
+.nav-burger{
+  display:none;
+  flex-direction:column;justify-content:center;align-items:center;
+  gap:5px;width:38px;height:38px;padding:6px;border-radius:10px;
+  background:rgba(13,27,51,.07);border:1px solid rgba(13,27,51,.1);
+  cursor:pointer;position:relative;z-index:1;transition:background .25s;
+  flex-shrink:0;
+}
+.nav-burger:hover{background:rgba(39,66,245,.1)}
+.nav-burger span{
+  display:block;width:18px;height:2px;border-radius:2px;
+  background:#0D1B33 !important;transition:transform .35s cubic-bezier(.22,1,.36,1),opacity .25s;
+  transform-origin:center;
+}
+/* Animated X when open */
+.nav-burger.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+.nav-burger.open span:nth-child(2){opacity:0;transform:scaleX(0)}
+.nav-burger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+
+@media(max-width:1040px){.nav-burger{display:flex}}
+
+/* ---------- DRAWER OVERLAY ---------- */
+.nav-drawer-overlay{
+  position:fixed;inset:0;z-index:198;
+  background:rgba(13,27,51,.45);backdrop-filter:blur(4px);
+  opacity:0;pointer-events:none;
+  transition:opacity .35s;
+}
+.nav-drawer-overlay.active{opacity:1;pointer-events:auto}
+
+/* ---------- SLIDE-IN DRAWER ---------- */
+.nav-drawer{
+  position:fixed;top:0;right:0;bottom:0;z-index:199;
+  width:min(320px, 88vw);
+  background:linear-gradient(160deg,rgba(255,255,255,.96),rgba(240,244,255,.94));
+  backdrop-filter:blur(28px) saturate(180%);-webkit-backdrop-filter:blur(28px) saturate(180%);
+  border-left:1px solid rgba(255,255,255,.7);
+  box-shadow:-8px 0 40px rgba(13,27,51,.18);
+  display:flex;flex-direction:column;padding:20px;gap:0;
+  transform:translateX(100%);
+  transition:transform .4s cubic-bezier(.22,1,.36,1);
+}
+.nav-drawer.active{transform:translateX(0)}
+
+/* Drawer header: logo + close button */
+.nav-drawer-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding-bottom:20px;border-bottom:1px solid rgba(13,27,51,.08);
+  margin-bottom:16px;
+}
+.nav-drawer-close{
+  width:34px;height:34px;border-radius:50%;
+  background:rgba(13,27,51,.07);border:none;cursor:pointer;
+  font-size:1rem;color:#0D1B33;display:flex;align-items:center;justify-content:center;
+  transition:background .2s;
+}
+.nav-drawer-close:hover{background:rgba(39,66,245,.12);color:#2742F5}
+
+/* Drawer nav links */
+.nav-drawer-links{
+  display:flex;flex-direction:column;gap:2px;flex:1;
+}
+.nav-drawer-links a{
+  display:block;padding:13px 16px;border-radius:12px;
+  font-family:'Space Grotesk',sans-serif;font-weight:500;font-size:1rem;
+  color:#0D1B33 !important;transition:background .25s,color .2s;
+}
+.nav-drawer-links a:hover,.nav-drawer-links a.on{
+  background:rgba(39,66,245,.1);color:#2742F5 !important;
+}
+.nav-drawer-links a.on{font-weight:600}
+
+/* CTA inside drawer */
+.nav-drawer-cta{
+  margin-top:20px;display:flex !important;justify-content:center;
+  padding:14px 20px !important;border-radius:14px !important;
+  font-size:.95rem !important;
+}
+
